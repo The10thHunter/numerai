@@ -10,7 +10,7 @@ napi = NumerAPI()
 #Dataset already installed on local. Edit this out during commit 
 
 def basicInstall(): 
-    napi.download_dataset("v5.0/train.parquet")
+    napi.download_dataset("../v5.0/train.parquet")
 
 def allInstall(path):
 #If it is desirable, you may install all data formats this way instead:
