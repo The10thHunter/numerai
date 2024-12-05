@@ -1,25 +1,20 @@
 #Download Script for NumerAI
+
 from numerapi import NumerAPI
 from os import listdir
-#Only import create_engine, pandas will handle everything else
-from sqlalchemy import create_engine 
+#from sqlalchemy import create_engine 
 import pandas as pd 
 
 napi = NumerAPI()
-engine = create_engine("mysql+pymysql://user:password@host:port/dbname")
+#engine = create_engine("mysql+pymysql://user:password@host:port/dbname")
 #Dataset already installed on local. Edit this out during commit 
 
 def basicInstall(): 
-    if input("Install all? (y/n)").lower() == "y":
-        napi.download_dataset("v5.0/train.parquet")
-    sql = pd.read_parquet("/v5.0/train.parquet")
-    #train is the table name 
-    sql.to_sql("train", engine,index = True, index_col = "id")
+    napi.download_dataset("v5.0/train.parquet")
 
-def allInstall():
-#If it is desirable, you may install all data formats this way instead: :  
-    from numerapi import NumerAPI
-    for file in [a for a in napi.list_datasets() if a.endswith(".parquet")]: 
+def allInstall(path):
+#If it is desirable, you may install all data formats this way instead:
+    for file in [a for a in napi.list_datasets() if a.endswith(".parquet") and a is not in listdir(path)]: 
         napi.download_dataset(file)
 
 def autoSql(filepath, eng):

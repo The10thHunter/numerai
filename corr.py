@@ -1,17 +1,15 @@
 import pandas as pd 
 import time 
-def test1(x):    
+def test1(x, data):    
     start = time.time()
-    data = pd.read_parquet("../v5.0/train.parquet")
     data = data[[a for a in data.columns if "feature" in a]]
     data = data.iloc[:,:x]
     data.corr().to_csv("sample_corr.csv")
     end = time.time()
     return {x: x, y :end-start}
 
-def test2(x): 
+def test2(x, data): 
     start = time.time()
-    data = pd.read_parquet("../v5.0/train.parquet")
     data = data[[a for a in data.columns if "feature" in a]]
 
     #result = pd.DataFrame()
@@ -30,5 +28,6 @@ def test2(x):
     end = time.time()
     print(str(x) + " features in " + str(end-start) + " time (sec)")
 
-for x in range(50, 350, 50):
-    test2(x)
+data = pd.read_parquet("../v5.0/train.parquet")
+for x in range(300, 500, 50):
+    test2(x, data)

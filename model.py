@@ -18,7 +18,7 @@ def corrTable(dataframe):
     corr_matrix.columns = ["feature1", "feature2", "correlation"]
     corr_matrix = corr_matrix[corr_matrix["feature1"] != corr_matrix["feature2"]]
     
-    return corr_matrix
+    return os.path(corr_matrix.to_csv())
 
 data = pd.read_parquet("../v5.0/train.parquet").sample(frac = 0.05, random_state = SEED)
 
