@@ -14,7 +14,7 @@ def basicInstall():
 
 def allInstall(path):
 #If it is desirable, you may install all data formats this way instead:
-    for file in [a for a in napi.list_datasets() if a.endswith(".parquet") and a isnot in listdir(path)]: 
+    for file in [a for a in napi.list_datasets() if a.endswith(".parquet") and a not in listdir(path)]: 
         napi.download_dataset(file)
 
 def autoSql(filepath, eng):
