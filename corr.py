@@ -12,7 +12,6 @@ def test2(x, data):
     start = time.time()
     data = data[[a for a in data.columns if "feature" in a]]
 
-    #result = pd.DataFrame()
     final = []
     for z in range(0,x+1,1): 
         colpop = data.columns[z]
@@ -28,6 +27,6 @@ def test2(x, data):
     end = time.time()
     print(str(x) + " features in " + str(end-start) + " time (sec)")
 
-data = pd.read_parquet("../v5.0/train.parquet")
-for x in range(300, 500, 50):
-    test2(x, data)
+def main():
+    data = pd.read_parquet("../v5.0/train.parquet")
+    test2(500, data)
