@@ -11,5 +11,5 @@ for chunk in feats:
     subtable = subtable.reset_index().melt(id_vars = "index", var_name = "feature2",value_name = 'Correlation')
     subtable.sort_values(by = "Correlation", ascending = False)
     features_useful = subtable[(subtable["Correlation"] < 0.90)]["index"].drop_duplicates().tolist()
-    
+    print(len(features_useful))
 
