@@ -29,9 +29,10 @@ def feature_selector(data):
     #subtable = subtable[(subtable["Correlation"] >= 0.80)]
     # bad_features.append(subtable["index"].drop_duplicates())
 
-print(feature_selector(data).columns)
+x = feature_selector(data).columns
+print(x)
 with open("good_features.txt") as outfile: 
-    outfile.write('\n'.join(i for i in feature_selector(data.columns)))
+    outfile.write('\n'.join(i for i in x)
 """
 filename = "bad_features.csv"
 outfile = open(filename, 'w')
