@@ -12,6 +12,7 @@ def feature_selector(data):
             return i 
         else:
             return data
+    feats = np.split(data, i)
     relapse_lst = []
     # DEBUG: print(len(feats[1]), len(feats[0]), len(feats[23]))
     for chunk in feats: 
@@ -23,11 +24,8 @@ def feature_selector(data):
         relapse_lst = relapse_lst.append(subtable["feature2"].tolist())
 
     print("Next Round, starting recursion")
-    if feature_selector(data[data.columns == relapse_lst["feature2"]] == data): 
-        return data
-    else: 
-        feature_selector(data[data.columns == relapse_lst["feature2"]])
-
+    feature_selector(data[data.columns == relapse_lst["feature2"]])
+    
     #subtable = subtable[(subtable["Correlation"] >= 0.80)]
     # bad_features.append(subtable["index"].drop_duplicates())
 
