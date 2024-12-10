@@ -9,9 +9,12 @@ feats = np.array_split(data.columns, 24)
 for chunk in feats: 
     subtable = abs(data[chunk].corr())
     subtable = subtable.reset_index().melt(id_vars = "index", var_name = "feature2",value_name = 'Correlation')
+    subtable = subtable[subtable["index"] != subtable["feature2"]]
     subtable = subtable.sort_values(by = "Correlation", ascending = False)
     subtable = subtable[(subtable["Correlation"] >= 0.80)]
     #["index"].drop_duplicates().tolist()
     bad_features.append(subtable["index"].drop_duplicates())
-    print(len(bad_features))
-    
+
+filename = "bad_features.txt"
+outfile = open(filename, 'w')
+outfile.write('\n'.join(str(i) for i in bad_features))
