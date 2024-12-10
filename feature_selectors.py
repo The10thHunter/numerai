@@ -11,7 +11,7 @@ for chunk in feats:
     subtable = abs(data[chunk].corr())
     subtable = subtable.reset_index().melt(id_vars = "index", var_name = "feature2",value_name = 'Correlation')
     subtable.sort_values(by = "Correlation", ascending = False)
-    for subtable["Correlation"] < 0.90: 
+    if subtable["Correlation"] < 0.90: 
         features_useful.append(subtable["index"])
 
     print(len(features_useful))
