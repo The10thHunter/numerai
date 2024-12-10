@@ -9,5 +9,6 @@ feats = np.array_split(data.columns, 24)
 
 for chunk in feats: 
     subtable = data[chunk].corr().melt(id_vars = data.columns, value_name = 'Correlation')
+    print(subtable.head())
 
     
