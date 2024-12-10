@@ -32,7 +32,7 @@ def feature_selector(data):
     # bad_features.append(subtable["index"].drop_duplicates())
 
 print(feature_selector(data).columns)
-with outfile as open("good_features.txt"): 
+with open("good_features.txt") as outfile: 
     outfile.write('\n'.join(i for i in feature_selector(data.columns)))
 """
 filename = "bad_features.csv"
