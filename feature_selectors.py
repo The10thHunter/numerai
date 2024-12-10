@@ -3,6 +3,7 @@ import numpy as np
 
 data = pd.read_parquet("../v5.0/train.parquet")
 data = data[[a for a in data.columns if "feature" in a]]
+
 # bad_features = []
 def feature_selector(data):
     #x = len(data.columns) (figure out divisors) 
@@ -30,6 +31,9 @@ def feature_selector(data):
     #subtable = subtable[(subtable["Correlation"] >= 0.80)]
     # bad_features.append(subtable["index"].drop_duplicates())
 
+print(feature_selector(data).columns)
+with outfile as open("good_features.txt"): 
+    outfile.write('\n'.join(i for i in feature_selector(data.columns)))
 """
 filename = "bad_features.csv"
 outfile = open(filename, 'w')
