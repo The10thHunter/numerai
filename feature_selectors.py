@@ -9,7 +9,7 @@ feats = np.array_split(data.columns, 24)
 
 for chunk in feats: 
     subtable = data[chunk].corr()
-    subtalble = subtalbe.reset_index().melt(id_vars = "index", var_name = "feature2",value_name = 'Correlation')
+    subtable = subtable.reset_index().melt(id_vars = "index", var_name = "feature2",value_name = 'Correlation')
     subtable.rename({"index": "feature1"}, inplace = True)
     print(subtable.head())
 
