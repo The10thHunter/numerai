@@ -15,6 +15,7 @@ for chunk in feats:
     #["index"].drop_duplicates().tolist()
     bad_features.append(subtable["index"].drop_duplicates())
 
-filename = "bad_features.txt"
+filename = "bad_features.csv"
 outfile = open(filename, 'w')
-outfile.write('\n'.join(str(i) for i in bad_features))
+outfile.write(','.join(i for i in bad_features))
+print(i)
