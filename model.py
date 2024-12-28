@@ -1,42 +1,33 @@
+import pickle
 import pandas as pd
-#from sklearn.tree import DecisionTreeRegressor
-#from sklearn.model_selection import train_test_split
-"""
-from sklearn import 
-from sklearn import 
-#...
-"""
-SEED = 0
-#data = pd.read_parquet("../v5.0/train.parquet").sample(frac = 0.1, random_state = SEED, replace = False)
+from sklearn import DecisionTreeRegressor
+from sklearn.ensemble import GradientBoostingRegressor
+import random
 
+def basicGBRTrain(filtered_df): #n_est exists as a test var, it will be deployed via range() for testing
+    #DEFINE CONSTS
+    N_EST = 50
+    LEARN_RATE = 1.25
+    RAND = 99
+    #SETUP: 
+    x = filtered_df[[a for a in filtered_df.columns if "feature" in filtered_df]]
+    y = filtered_df["target"] #Main Target
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.33, random_state = RAND, shuffle = True)
 
-def corrTable(dataframe):
-    #test = dataframe[[b for b in dataframe.columns if "target" in b]]
-    corr_matrix = dataframe.corr(method = "pearson").abs()
-    corr_matrix = corr_matrix.unstack().reset_index()
-
-    corr_matrix.columns = ["feature1", "feature2", "correlation"]
-    corr_matrix = corr_matrix[corr_matrix["feature1"] != corr_matrix["feature2"]]
+    #If you want, just swap functions 
+    mod = GradientBoostingRegressor(random_state = RAND, learning_rate = LEARN_RATE, n_estimators = N_EST)
+    mod.fit(x_train, y_train)
     
-    return os.path(corr_matrix.to_csv())
+    return mod.score(x_test, y_test)
+    #END OF BASIC MODEL
 
-data = pd.read_parquet("../v5.0/train.parquet").sample(frac = 0.05, random_state = SEED)
+if __name__ == "__main__":
+    df = pd.read_parquet("../v5.0/train.parquet")
+    #Sample feature columns from lst 
+    features = df[[a for a in df.columns if "feauture" in df.columns]].columns
+    for n in range(500, 2001, 500): 
+        random.seed(99)
+        random_cols = random.sample(features, n)
+        score = basicGBRTrain(df[[a for a in df.columns if a in random_cols or a == "target"]])
 
-data = data.iloc[:,:50]
-print("Data Read.")
-final = corrTable(data)
-final.to_csv("sample_corr.csv")
-
-#print("Length of Training: " + str(len(train.columns)))
-#print("Length of Test: " + str(len(test.columns)))
-
-"""
-class MicroModel: 
-    private: 
-        #Private members
-    protected: 
-        #Protected 
-    public:
-        #Public members
-
-"""
+        print(f"Scored: {round(score, 4)} where random features = {n}")
