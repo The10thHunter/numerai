@@ -48,36 +48,23 @@ class torchMod(torch.nn.Module): #Layerlst is a var describing feature to input 
     def forwardprop(self, ftensor):
         #You can alter the input here later. But for now we'll manually shove it in. Come back to it later. 
         return self.stack(ftensor)
+
     def lossFn(self, inpt, target):
         return self.loss_fn(inpt, target)
 
     @testing
-    def backwardprop(self, inpt, target):
-        loss = self.loss_fn(inpt, target)
+    def backwardprop(self):
+        loss = self.loss_fn(prediction, target)
         loss.backward()
-
-    def initDataloader(fpath, nocols):
-        df = pd.read_parquet(fpath)
-        df = df[[a for a in data.columns not in nocols]]
-        tensor = torch.tensor(df[df.columns != 'target'].to_numpy)
-        ttensor = torch.tensor(df[df.columns == 'target'].to_numpy)
-        save = input("Do you want to save the dataset as a tensor?")
-        if (save):
-            torch.save(tensor, "feature-trainparq.pt")
-            torch.save(ttensor, "target-trainparq.pt")
-            #Each of these saved tensors will be pre-filtered
-        else:
-            pass
-        return tensor, ttensor
 
     @staticmethod
     def cudaTest():
         if (torch.cuda.is_available()):
             print(f"CUDA version: {torch.version.cuda}")
-            print(f"CUDA device: {torch.cuda.current_device()}")
+            print(f"CUDA device (#): {torch.cuda.current_device()}")
+            print(f"CUDA device (name): {torch.cuda.get_device_name}")
         else: 
             print("Cuda is unavailable... using CPU.")
-
 
 def depmain(): #dep is essentially a prefix that ignores it so I can write another main instance.
     torchMod.cudaTest()
@@ -89,8 +76,6 @@ def main():
     print("Hello World") #Placeholder for now
 if __name__ == '__main__': 
     main()
-
-        
 
 
 """
