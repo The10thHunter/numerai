@@ -88,7 +88,10 @@ def validate(model, dataloader, criterion):
 def main():
     parquet_path = "/Users/prashant/numerai/v5.0/train.parquet"
     df = pd.read_parquet(parquet_path)
-    df = df.sample(n=5000, random_state=SEED)  # or df.head(5000)
+    if DEVICE == "cpu": 
+        df = df.sample(n=5000, random_state=SEED)  # or df.head(5000)
+    else: 
+        pass
     feature_cols = [col for col in df.columns if col.startswith("feature_")]
     target_col = "target"
 
