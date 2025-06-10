@@ -67,15 +67,21 @@ class torchMod(torch.nn.Module): #Layerlst is a var describing feature to input 
             print("Cuda is unavailable... using CPU.")
 
 class NumeraiDataset(torch.utils.data.Dataset):
-    def __init__(self, df, feature_cols, target_col):
-        self.features = df[feature_cols].values.astype(np.float32)
-        self.targets = df[target_col].values.astype(np.float32).reshape(-1, 1)
+    def __init__(self, df: pd.DataFrame, feature_cols: list[str], target_col: str):
+        self.df = df
+        self.feature_cols = feature_cols
+        self.target_col = target_col
 
     def __len__(self):
-        return len(self.features)
+        return len(self.df)
 
     def __getitem__(self, idx):
-        return torch.tensor(self.features[idx]), torch.tensor(self.targets[idx])
+        row = self.df.iloc[idx]
+
+        features = torch.tensor(row[self.feature_cols].values, dtype=torch.float32)
+        target = torch.tensor([row[self.target_col]], dtype=torch.float32)
+
+        return features, target
 
 def training():
     torchMod.cudaTest()
@@ -87,7 +93,8 @@ def training():
     #filt = random.sample([f for f in data.columns if "feature" in f], 100)  # Select 100 random features
 
     # === Prepare dataset and dataloader ===
-    dataset = NumeraiDataset(data, data.columns, target_col)
+    feature_cols = [col for col in data.columns if "feature" in col]
+    dataset = NumeraiDataset(data, feature_cols, target_col)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=64, shuffle=True)
 
     # === Initialize model, move to device, define optimizer ===
@@ -125,7 +132,8 @@ def training():
 def validation():
     filepath = "../v5.0/validation.parquet"
     data = pd.read_parquet(filepath)
-    dataset = NumeraiDataset(pd.read_parquet(filepath), data.columns, target_col) 
+    feature_cols = [col for col in data.columns if "feature" in col]
+    dataset = NumeraiDataset(data, feature_cols, target_col)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size = 64, shuffle = True) 
     model = torch.load("../assets/torchMod.pt").to(device)
 
