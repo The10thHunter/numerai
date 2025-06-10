@@ -1,5 +1,5 @@
 # numerai_vector_model.py
-
+#Prompted with an architecture spec based on KNN categorization of labels as angle and data vals as magnitude resulting in a identifiable, high speed model. 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -16,7 +16,14 @@ EPOCHS = 10
 LEARNING_RATE = 1e-3
 TRAIN_VAL_SPLIT = 0.8
 USE_CUDA = torch.cuda.is_available()
-DEVICE = torch.device("cuda" if USE_CUDA else "cpu")
+#DEVICE = torch.device("cuda" if USE_CUDA else "cpu")
+if torch.cuda.is_available():
+    DEVICE = torch.device("cuda")
+elif torch.backends.mps.is_available():
+    DEVICE = torch.device("mps")
+else:
+    DEVICE = torch.device("cpu")
+print(DEVICE)
 SEED = 42
 
 torch.manual_seed(SEED)
@@ -86,10 +93,10 @@ def validate(model, dataloader, criterion):
 
 # --- Main Pipeline ---
 def main():
-    parquet_path = "/Users/prashant/numerai/v5.0/train.parquet"
+    parquet_path = "~/numerai/v5.0/train.parquet"
     df = pd.read_parquet(parquet_path)
-    if DEVICE == "cpu": 
-        df = df.sample(n=5000, random_state=SEED)  # or df.head(5000)
+    if DEVICE != "cuda": 
+        df = df.sample(n=7500, random_state=SEED)  # or df.head(5000)
     else: 
         pass
     feature_cols = [col for col in df.columns if col.startswith("feature_")]
