@@ -77,7 +77,7 @@ class NumeraiDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         return torch.tensor(self.features[idx]), torch.tensor(self.targets[idx])
 
-def main():
+def training():
     torchMod.cudaTest()
 
     # === Load and prepare data ===
@@ -120,6 +120,25 @@ def main():
                 print(f"Epoch [{epoch+1}/{epochs}], Batch [{batch_idx}], Loss: {loss.item():.6f}")
 
         print(f"Epoch [{epoch+1}] completed. Average Loss: {running_loss / len(dataloader):.6f}")
+        torch.save(model, "../model/torchMod.pt")
+
+def validation()
+    filepath = "../v5.0/validation.parquet"
+    data = pd.read_parquet(filepath)
+    dataset = NumeraiDataset(pd.read_parquet(filepath), filt, target_col) 
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size = 64, shuffle = True) 
+    model = torch.load("../model/torchMod.pt").to(device)
+
+    for batch_idx, (features, targets) in enumerate(dataloader):
+        features, targets = features.to(device), targets.to(device)
+
+        pred = model.eval(features)
+        loss = model.lossFn(pred, targets)
+
+        running_loss += loss.item()
+
+        print(f"Epoch [{epoch+1}] completed. Average Loss: {running_loss / len(dataloader):.6f}")
+
 
 if __name__ == '__main__':
     main()
