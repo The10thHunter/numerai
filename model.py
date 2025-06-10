@@ -28,7 +28,7 @@ class torchMod(torch.nn.Module): #Layerlst is a var describing feature to input 
 
     def __init__(self): #Perhaps implement a loop based on divisible inputs of features for testing purposes. You can do this by literally just iteratting with a for and then trying to square root down.
         super().__init__()
-        self.layerlst = [100, 50, 25, 10, 1]
+        self.layerlst = [2376, 792, 264, 33, 11, 1]
         #self.ftensor = ftensor #feature tensor
         #self.ttensor = ttensor #target tensor
         self.stack = torch.nn.Sequential(
@@ -38,9 +38,9 @@ class torchMod(torch.nn.Module): #Layerlst is a var describing feature to input 
                 torch.nn.Tanh(), 
                 torch.nn.Linear(self.layerlst[2], self.layerlst[3]), 
                 torch.nn.Tanh(),
-                torch.nn.Linear(self.layerlst[3], self.layerlst[4])#,
-                #torch.nn.Tanh(), 
-                #...
+                torch.nn.Linear(self.layerlst[3], self.layerlst[4]),
+                torch.nn.Tanh(), 
+                torch.nn.Linear(self.layerlst[4], self.layerlst[5])
             )
         self.loss_fn = torch.nn.MSELoss()
                         
@@ -84,10 +84,10 @@ def training():
     filepath = "../v5.0/train.parquet"
     data = pd.read_parquet(filepath)
     target_col = "target"
-    filt = random.sample([f for f in data.columns if "feature" in f], 100)  # Select 100 random features
+    #filt = random.sample([f for f in data.columns if "feature" in f], 100)  # Select 100 random features
 
     # === Prepare dataset and dataloader ===
-    dataset = NumeraiDataset(data, filt, target_col)
+    dataset = NumeraiDataset(data, data.columns, target_col)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=64, shuffle=True)
 
     # === Initialize model, move to device, define optimizer ===
@@ -119,15 +119,15 @@ def training():
             if batch_idx % 10 == 0:
                 print(f"Epoch [{epoch+1}/{epochs}], Batch [{batch_idx}], Loss: {loss.item():.6f}")
 
-        print(f"Epoch [{epoch+1}] completed. Average Loss: {running_loss / len(dataloader):.6f}")
-        torch.save(model, "../model/torchMod.pt")
+    print(f"Epoch [{epoch+1}] completed. Average Loss: {running_loss / len(dataloader):.6f}")
+    torch.save(model, "../assets/torchMod.pt")
 
 def validation()
     filepath = "../v5.0/validation.parquet"
     data = pd.read_parquet(filepath)
-    dataset = NumeraiDataset(pd.read_parquet(filepath), filt, target_col) 
+    dataset = NumeraiDataset(pd.read_parquet(filepath), data.columns, target_col) 
     dataloader = torch.utils.data.DataLoader(dataset, batch_size = 64, shuffle = True) 
-    model = torch.load("../model/torchMod.pt").to(device)
+    model = torch.load("../assets/torchMod.pt").to(device)
 
     for batch_idx, (features, targets) in enumerate(dataloader):
         features, targets = features.to(device), targets.to(device)
@@ -141,7 +141,9 @@ def validation()
 
 
 if __name__ == '__main__':
-    main()
+    training()
+    validation()
+
 """
 def basicGBRTrain(train_df, target):
     #Basic model skeleton 
