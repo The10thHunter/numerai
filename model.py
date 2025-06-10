@@ -28,7 +28,7 @@ class torchMod(torch.nn.Module): #Layerlst is a var describing feature to input 
 
     def __init__(self): #Perhaps implement a loop based on divisible inputs of features for testing purposes. You can do this by literally just iteratting with a for and then trying to square root down.
         super().__init__()
-        self.layerlst = [2376, 792, 264, 33, 11, 1]
+        self.layerlst = [256, 128, 64, 16, 1]
         #self.ftensor = ftensor #feature tensor
         #self.ttensor = ttensor #target tensor
         self.stack = torch.nn.Sequential(
@@ -38,9 +38,9 @@ class torchMod(torch.nn.Module): #Layerlst is a var describing feature to input 
                 torch.nn.Tanh(), 
                 torch.nn.Linear(self.layerlst[2], self.layerlst[3]), 
                 torch.nn.Tanh(),
-                torch.nn.Linear(self.layerlst[3], self.layerlst[4]),
-                torch.nn.Tanh(), 
-                torch.nn.Linear(self.layerlst[4], self.layerlst[5])
+                torch.nn.Linear(self.layerlst[3], self.layerlst[4])#,
+                #torch.nn.Tanh(), 
+                #torch.nn.Linear(self.layerlst[4], self.layerlst[5])
             )
         self.loss_fn = torch.nn.MSELoss()
                         
@@ -90,11 +90,11 @@ def training():
     filepath = "../v5.0/train.parquet"
     data = pd.read_parquet(filepath)
     target_col = "target"
+    filt = [f for f in data.columns if "feature" in f][:256]
     #filt = random.sample([f for f in data.columns if "feature" in f], 100)  # Select 100 random features
 
     # === Prepare dataset and dataloader ===
-    feature_cols = [col for col in data.columns if "feature" in col]
-    dataset = NumeraiDataset(data, feature_cols, target_col)
+    dataset = NumeraiDataset(data, filt, target_col)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=64, shuffle=True)
 
     # === Initialize model, move to device, define optimizer ===
@@ -132,8 +132,9 @@ def training():
 def validation():
     filepath = "../v5.0/validation.parquet"
     data = pd.read_parquet(filepath)
-    feature_cols = [col for col in data.columns if "feature" in col]
-    dataset = NumeraiDataset(data, feature_cols, target_col)
+    filt = [f for f in data.columns if "feature" in f][:256]
+    #feature_cols = [col for col in data.columns if "feature" in col]
+    dataset = NumeraiDataset(data, filt, target_col)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size = 64, shuffle = True) 
     model = torch.load("../assets/torchMod.pt").to(device)
 
