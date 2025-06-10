@@ -122,7 +122,7 @@ def training():
     print(f"Epoch [{epoch+1}] completed. Average Loss: {running_loss / len(dataloader):.6f}")
     torch.save(model, "../assets/torchMod.pt")
 
-def validation()
+def validation():
     filepath = "../v5.0/validation.parquet"
     data = pd.read_parquet(filepath)
     dataset = NumeraiDataset(pd.read_parquet(filepath), data.columns, target_col) 
