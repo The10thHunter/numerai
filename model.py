@@ -66,18 +66,63 @@ class torchMod(torch.nn.Module): #Layerlst is a var describing feature to input 
         else: 
             print("Cuda is unavailable... using CPU.")
 
-def depmain(): #dep is essentially a prefix that ignores it so I can write another main instance.
+class NumeraiDataset(torch.utils.data.Dataset):
+    def __init__(self, df, feature_cols, target_col):
+        self.features = df[feature_cols].values.astype(np.float32)
+        self.targets = df[target_col].values.astype(np.float32).reshape(-1, 1)
+
+    def __len__(self):
+        return len(self.features)
+
+    def __getitem__(self, idx):
+        return torch.tensor(self.features[idx]), torch.tensor(self.targets[idx])
+
+def main():
     torchMod.cudaTest()
+
+    # === Load and prepare data ===
     filepath = "../v5.0/train.parquet"
-    data = pd.read_parquet(filepath) 
-    filt = random.sample([f for f in data.columns if "feature" in f], 100) #Short for filter
+    data = pd.read_parquet(filepath)
+    target_col = "target"
+    filt = random.sample([f for f in data.columns if "feature" in f], 100)  # Select 100 random features
 
-def main(): 
-    print("Hello World") #Placeholder for now
-if __name__ == '__main__': 
+    # === Prepare dataset and dataloader ===
+    dataset = NumeraiDataset(data, filt, target_col)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=64, shuffle=True)
+
+    # === Initialize model, move to device, define optimizer ===
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = torchMod().to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+
+    # === Training loop ===
+    epochs = 5
+    for epoch in range(epochs):
+        model.train()
+        running_loss = 0.0
+        for batch_idx, (features, targets) in enumerate(dataloader):
+            features, targets = features.to(device), targets.to(device)
+
+            # Forward
+            predictions = model.forwardprop(features)
+
+            # Loss
+            loss = model.lossFn(predictions, targets)
+
+            # Backward
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+
+            if batch_idx % 10 == 0:
+                print(f"Epoch [{epoch+1}/{epochs}], Batch [{batch_idx}], Loss: {loss.item():.6f}")
+
+        print(f"Epoch [{epoch+1}] completed. Average Loss: {running_loss / len(dataloader):.6f}")
+
+if __name__ == '__main__':
     main()
-
-
 """
 def basicGBRTrain(train_df, target):
     #Basic model skeleton 
